@@ -921,6 +921,41 @@ impl Context {
         }
     }
 
+    /// Cause conditional gating of a policy based on an OR'd condition.
+    ///
+    /// The TPM will ensure that the current policy digest equals at least
+    /// one of the digests.
+    /// If this is the case, the policyDigest of the policy session is replaced
+    /// by the value of the different hashes.
+    ///
+    /// # Constraints
+    /// * `hash_list` must be at least 2 and at most 8 elements long
+    ///
+    /// # Errors
+    /// * if the hash list provided is too short or too long, a `WrongParamSize` wrapper error will be returned
+    pub fn policy_or(
+        &mut self,
+        policy_session: ESYS_TR,
+        hash_list: TPML_DIGEST,
+    ) -> Result<()> {
+        let ret = unsafe {
+            Esys_PolicyOR(
+                self.mut_context(),
+                policy_session,
+                self.sessions.0,
+                self.sessions.1,
+                self.sessions.2,
+                &hash_list,
+            )
+        };
+        let ret = Error::from_tss_rc(ret);
+        if ret.is_success() {
+            Ok(())
+        } else {
+            Err(ret)
+        }
+    }
+
     // TODO: Should we really keep `num_bytes` as `u16`?
     /// Get a number of random bytes from the TPM and return them.
     ///
