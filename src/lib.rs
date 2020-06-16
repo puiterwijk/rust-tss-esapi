@@ -956,6 +956,41 @@ impl Context {
         }
     }
 
+    /// Cause conditional gating of a policy based on an authorized policy
+    ///
+    /// The TPM will ensure that the current policy digest is correctly signed
+    /// by the
+    /// If this is the case, the policyDigest of the policy session is replaced
+    /// by the value of the different hashes.
+    pub fn policy_authorize(
+        &mut self,
+        policy_session: ESYS_TR,
+        approved_policy: TPM2B_DIGEST,
+        policy_ref: TPM2B_NONCE,
+        key_sign: TPM2B_NAME,
+        check_ticket: TPMT_TK_VERIFIED
+    ) -> Result<()> {
+        let ret = unsafe {
+            Esys_PolicyAuthorize(
+                self.mut_context(),
+                policy_session,
+                self.sessions.0,
+                self.sessions.1,
+                self.sessions.2,
+                &approved_policy,
+                &policy_ref,
+                &key_sign,
+                &check_ticket,
+            )
+        };
+        let ret = Error::from_tss_rc(ret);
+        if ret.is_success() {
+            Ok(())
+        } else {
+            Err(ret)
+        }
+    }
+
     // TODO: Should we really keep `num_bytes` as `u16`?
     /// Get a number of random bytes from the TPM and return them.
     ///
