@@ -731,7 +731,11 @@ impl Context {
                 self.optional_session_3(),
                 private,
                 public,
-                hierarchy.rh(),
+                if cfg!(tpm2_tss_2) {
+                    hierarchy.rh()
+                } else {
+                    hierarchy.esys_rh()
+                },
                 &mut esys_key_handle,
             )
         };
@@ -763,7 +767,11 @@ impl Context {
                 self.optional_session_3(),
                 null(),
                 public,
-                hierarchy.rh(),
+                if cfg!(tpm2_tss_2) {
+                    hierarchy.rh()
+                } else {
+                    hierarchy.esys_rh()
+                },
                 &mut esys_key_handle,
             )
         };
@@ -1387,7 +1395,11 @@ impl Context {
                 self.optional_session_3(),
                 &in_data,
                 hashing_algorithm.into(),
-                hierarchy.rh(),
+                if cfg!(tpm2_tss_2) {
+                    hierarchy.rh()
+                } else {
+                    hierarchy.esys_rh()
+                },
                 &mut out_hash_ptr,
                 &mut validation_ptr,
             )
