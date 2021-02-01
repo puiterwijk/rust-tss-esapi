@@ -1,0 +1,14 @@
+name: Automation
+
+#on: [pull_request]
+on: [push, pull_request]
+
+jobs:
+  semver_backwards_incompat:
+    name: Mark PR backwards incompatible if so
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
