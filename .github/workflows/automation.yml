@@ -16,5 +16,5 @@ jobs:
           components: rustc-dev, llvm-tools-preview
       - uses: actions-rs/install@v0.1
         with:
-          crate: semver
+          crate: semverver
           use-tool-cache: true
